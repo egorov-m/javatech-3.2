@@ -6,6 +6,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>File Manager</title>
+    <style>
+      .table__row {
+        text-align: -webkit-left;
+        text-align: -moz-left;
+        text-align: -o-left;
+        text-align: -ms-left;
+        text-align: left;
+      }
+      .table__row:hover {
+        background: #f0f0f0;
+      }
+      .cuttedText {
+        display: block;
+        max-width: 220px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
   </head>
   <body>
     <p>${date} ${timeZone}</p>
@@ -18,51 +37,59 @@
       method="get"
     >
       <button type="submit" name="path" value="${directorateAtTheTop}">
-        Вверх
+        <span class="cuttedText">⬆️ Вверх</span>
       </button>
     </form>
 
     <table>
-      <tr>
-        <th>Файлы</th>
-        <th>Размер</th>
-        <th>Даты</th>
+      <tr class="table__row">
+        <th><span class="cuttedText">Файл</span></th>
+        <th><span class="cuttedText">Размер</span></th>
+        <th><span class="cuttedText">Дата</span></th>
       </tr>
 
       <form action="/demo-web-1.0-SNAPSHOT/files" method="get">
-        <c:foreach var="directory" items="${directories}">
-          <tr>
+        <c:forEach var="directory" items="${directories}">
+          <tr class="table__row">
             <td>
               <button
                 type="submit"
                 name="path"
                 value="${directory.getAbsolutePath()}"
               >
-                ${directory.getName()}
+                <span class="cuttedText">📁 ${directory.getName()}/</span>
               </button>
             </td>
-            <td></td>
+            <td><span class="cuttedText"></span></td>
             <td>
-              <!-- {Files.getAttribute(directory.getPath(), "creationTime").toString()} -->
+              <span class="cuttedText"
+                >${Files.getAttribute(directory.toPath(),
+                "lastModifiedTime").toString()}</span
+              >
             </td>
           </tr>
-        </c:foreach>
+        </c:forEach>
       </form>
 
       <form action="/demo-web-1.0-SNAPSHOT/download" method="post">
-        <c:foreach var="file" items="${files}">
-          <tr>
+        <c:forEach var="file" items="${files}">
+          <tr class="table__row">
             <td>
               <button type="submit" name="path" value="${file.getPath()}">
-                ${file.getName()}
+                <span class="cuttedText">📄 ${file.getName()}</span>
               </button>
             </td>
-            <td><!--{Files.size(file.getPath())}B --></td>
             <td>
-              <!-- {Files.getAttribute(file.toPath(), "creationTime").toString()} -->
+              <span class="cuttedText">${Files.size(file.toPath())} B</span>
+            </td>
+            <td>
+              <span class="cuttedText"
+                >${Files.getAttribute(file.toPath(),
+                "lastModifiedTime").toString()}</span
+              >
             </td>
           </tr>
-        </c:foreach>
+        </c:forEach>
       </form>
     </table>
   </body>

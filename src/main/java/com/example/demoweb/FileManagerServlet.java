@@ -2,19 +2,21 @@ package com.example.demoweb;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "fileManagerServlet", value = "/files")
+@WebServlet(urlPatterns = "/files")
 public class FileManagerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,6 +34,8 @@ public class FileManagerServlet extends HttpServlet {
         String path = req.getParameter("path");
         if (path == null) {
             path = System.getProperty("user.dir");
+            resp.sendRedirect(String.format("%s%s?path=%s", req.getContextPath(), req.getServletPath(), URLEncoder.encode(path, StandardCharsets.UTF_8.toString())));
+            return;
         }
         req.setAttribute("path", path);
 
@@ -50,7 +54,7 @@ public class FileManagerServlet extends HttpServlet {
         req.getRequestDispatcher("fileManagerServlet.jsp").forward(req, resp);
     }
 
-    private void outputContentsDir(HttpServletRequest req, String path) throws IOException {
+    private void outputContentsDir(HttpServletRequest req, String path) {
         File f = new File(path);
         File[] allFiles = f.listFiles();
 
@@ -64,7 +68,6 @@ public class FileManagerServlet extends HttpServlet {
                         directories.add(file);
                     else
                         files.add(file);
-                    file.toPath();
                 }
             }
 

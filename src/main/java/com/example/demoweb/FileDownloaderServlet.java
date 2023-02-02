@@ -1,15 +1,18 @@
 package com.example.demoweb;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/download")
 public class FileDownloaderServlet extends HttpServlet {
@@ -20,9 +23,14 @@ public class FileDownloaderServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String path = req.getParameter("path");
-        
-        if (path != null) {
+        String item = req.getParameter("path"); 
+
+        if (item != null) {
+            byte[] bytes = item.getBytes(StandardCharsets.ISO_8859_1);
+            String path = new String(bytes, StandardCharsets.UTF_8);
+            String fileName = Paths.get(path).getFileName().toString();
+            resp.setContentType("application/x-msdownload");
+            resp.setHeader("Content-Disposition", "attachment; filename="+ fileName);
             try (InputStream in = new FileInputStream(path); OutputStream out = resp.getOutputStream()) {
                 byte[] buffer = new byte[1048];
 
@@ -30,6 +38,8 @@ public class FileDownloaderServlet extends HttpServlet {
                 while ((numBytesRead = in.read(buffer)) > 0) {
                     out.write(buffer, 0, numBytesRead);
                 }
+            } catch (FileNotFoundException e) {
+                resp.sendError(404);
             }
 
         resp.sendRedirect(req.getRequestURI());
