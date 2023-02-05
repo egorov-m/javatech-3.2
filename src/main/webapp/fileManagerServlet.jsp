@@ -33,7 +33,7 @@
 
     <form
       style="display: ${directoryVisibilityOnTop};"
-      action="/demo-web-1.0-SNAPSHOT/files"
+      action="./files"
       method="get"
     >
       <button type="submit" name="path" value="${directorateAtTheTop}">
@@ -48,7 +48,7 @@
         <th><span class="cuttedText">Дата</span></th>
       </tr>
 
-      <form action="/demo-web-1.0-SNAPSHOT/files" method="get">
+      <form action="./files" method="get">
         <c:forEach var="directory" items="${directories}">
           <tr class="table__row">
             <td>
@@ -71,7 +71,7 @@
         </c:forEach>
       </form>
 
-      <form action="/demo-web-1.0-SNAPSHOT/download" method="post">
+      <form action="./files/download" method="post">
         <c:forEach var="file" items="${files}">
           <tr class="table__row">
             <td>
